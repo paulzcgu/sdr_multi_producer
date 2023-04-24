@@ -1,0 +1,47 @@
+This is a test project to research whether SDRVM can listen to two or more RTL-SDR dongles on Raspberry Pi 4b. The project is based on @cemaxecuter's code regarding MQTT and Whipser.
+
+The project is trying to moniter multiple frequency with  mulitple RTL-SDR, record the audio when trigger is met, then send out the audio file path via MQTT. 
+
+Current issues:
+   * Rarely occasion: Segmentation Fault. Not sure what the trigger is.
+
+
+Pre-requisite:
+   * DragonOS Raspberry Pi - DragonOS_Pi64_Beta30
+   * RTL-SDR dongles x 2
+
+How to setup:
+   1. Reset serial for RTL-SDR.
+       * Only plug-in 1 RTL-SDR at a time
+       * Use 'SoapySDRUtil --find' to check the current serial of the dongle
+
+	'''
+	ubuntu@ubuntu:/tmp/transcriber$ SoapySDRUtil --find
+	######################################################
+	##     Soapy SDR -- the SDR abstraction library     ##
+	######################################################
+
+	[INFO] [UHD] linux; GNU C++ version 11.3.0; Boost_107400; UHD_4.1.0.5-0-unknown
+	Found Rafael Micro R820T tuner
+	Found Rafael Micro R820T tuner
+	Found device 0
+	  driver = rtlsdr
+	  label = Generic RTL2832U OEM :: 99
+	  manufacturer = Realtek
+	  product = RTL2838UHIDIR
+	  serial = 99
+	  tuner = Rafael Micro R820T
+
+	'''
+      * Modify the dongle serial with 'rtl_eeprom -s <new_serial>'
+      * Once success, disconnect and reconnect the dongle and check with 'SoapySDRUtil --find'
+      * Repeat the processes for the other dongles, ensure each dongle has unique dongle and record all of them
+
+   2. Currently all the files on my rp4 are located under '/usr/src/SDR4space/DragonOS/RX/DDC_whisper', but should work anywhere
+
+   3. Before start, check 'settings_remote_multi.js', make sure all "serial_no=" is filled with dongles serial numbers just set.
+
+   4. Run with 'sudo ./sdrvm -d DragonOS/RX/DDC_whisper/ -f DDC_MQTT_FM_remote_multi_whisper.js'
+
+   
+
