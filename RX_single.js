@@ -26,10 +26,10 @@ var IQBlock = new IQData('iq'.concat(argv(0)));
 
 // create output file
 print('create out queue');
-var tmp_filename = ''.concat('/tmp/transcriber/null_',argv(0),'.cs8');
-print(tmp_filename);
-IO.fdelete(tmp_filename);
-fifo_to_null.writeToFile(tmp_filename);
+var null_filename = ''.concat('/tmp/transcriber/null_',argv(0),'.cs8');
+print(null_filename);
+IO.fdelete(null_filename);
+fifo_to_null.writeToFile(null_filename);
 print('connect queue to receiver - '.concat(argv(0)));
 
 
@@ -39,7 +39,7 @@ if( !fifo_from_rx.ReadFromRx( rx ) ) {
     exit();
 }
 
-var recording;
+var recording = 0;
 var slice = new DDC(rx_no);
 slice.setOutBandwidth(16e3); // 24 kHz output
 slice.setCenter( argv(2) ) ; // shift frequency from center
@@ -109,7 +109,7 @@ while( fifo_from_rx.isFromRx() ) {
 		    print('End record');
 		    Queues.delete( 'output');
 		    fifo_to_file = Queues.create( 'output');
-		    IO.fdelete('/tmp/null.cs8');
+		    IO.fdelete(null_filename);
 		    // createTask('start_whisper.js', '/tmp/F_' + (rx.getRxCenterFreq() + (offset_center/1e6)).toFixed(3) + '_' + datenow + '.wav' );
 		    createTask('FM_demod_remote.js',new_file);
 		}
