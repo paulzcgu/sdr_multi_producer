@@ -45,7 +45,8 @@ How to setup:
 	'''
       * Modify the dongle serial with 'rtl_eeprom -s <new_serial>'
       * Once success, disconnect and reconnect the dongle and check with 'SoapySDRUtil --find'
-      * Repeat the processes for the other dongles, ensure each dongle has unique dongle and record all of them
+      * Repeat the processes for the other dongles, ensure each dongle has unique serial number and document all of the serials
+        for next steps.
 
    2. Currently all the files on my rp4 are located under '/usr/src/SDR4space/DragonOS/RX/DDC_whisper', but should work anywhere
 
