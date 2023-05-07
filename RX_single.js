@@ -4,13 +4,14 @@
 //	- cfg.sdr_name
 //	- cfg.threshold
 //	- cfg.offset_center
+//	- cfg.dest_folder
 //	- debug
 rename('RX_single')
 
-print(''.concat('Starting RX task: ', argv(0), 'with Threshold: ',argv(1), ' with Offset: ', argv(2)));
+print(''.concat('Starting RX task: ', argv(0), 'with Threshold: ',argv(1), ' with Offset: ', argv(2), ' - debug = ', argv(4)));
 
 var rx_no = argv(0);
-var debug = Boolean(argv(4));
+var debug_mode = argv(4);
 var dest_folder = argv(3);
 
 // get device
@@ -25,11 +26,14 @@ var IQBlock = new IQData('iq'.concat(argv(0)));
 
 
 // create output file
-print('create out queue');
-var null_filename = ''.concat('/tmp/transcriber/null_',argv(0),'.cs8');
-print(null_filename);
-IO.fdelete(null_filename);
-fifo_to_null.writeToFile(null_filename);
+if (debug_mode == true) {
+    print('create out queue');
+    var null_filename = ''.concat('/tmp/transcriber/null_',argv(0),'.cs8');
+    print(null_filename);
+    IO.fdelete(null_filename);
+    fifo_to_null.writeToFile(null_filename);
+}
+
 print('connect queue to receiver - '.concat(argv(0)));
 
 
@@ -70,9 +74,10 @@ for (var a=0; a< 20; a++) {
 
 var offset_center = 10;
 trigger = (baseline/19) + offset_center;
-if (tirgger > -35) {
-    trigger = -35;
+if (trigger > -35) {
+    trigger = -35.0;
 }
+
 print (rx_no, ' - Baseline level on last 20 blocks :', baseline/19, ' -  set trigger level : ' , trigger);
 
 print(rx_no, ' - waiting for signal ...');
@@ -106,7 +111,6 @@ while( fifo_from_rx.isFromRx() ) {
 		fifo_to_file.enqueue( ifdata );		
 		// write the samples in the output queue
 		ifdata = slice.read();
-		recording=1;		
 	    } else {
 		if (recording==1) {
 		    print('End record');
@@ -117,8 +121,10 @@ while( fifo_from_rx.isFromRx() ) {
 		    createTask('FM_demod_remote.js',new_file);
 		}
 
-		//if (debug) { print(ifdata.rms().toFixed(2),'  *** No signal !  - Trigger : ', trigger.toFixed(2));}
-		fifo_to_null.enqueue( ifdata );                 
+		if (debug_mode == true) { 
+		    print(ifdata.rms().toFixed(2),'  *** No signal !  - Trigger : ', trigger.toFixed(2));
+		    fifo_to_null.enqueue( ifdata );                 
+	        }
 		// write the samples in the output queue
 		ifdata = slice.read();
 		recording=0;

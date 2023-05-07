@@ -66,8 +66,8 @@ for (i=1; i<=sdr_cnt; i++) {
 
 // Create Tasks
 for (i=1; i <= sdr_cnt; i++) {
-    var cfg = sdr_conf[i-1];
-    var tid = createTask('RX_single.js',cfg.sdr_name,cfg.threshold,cfg.offset_center,dest_folder,debug);
+    var cfg = sdr_conf[i-1]
+    var tid = createTask('RX_single.js',cfg.sdr_name,cfg.threshold,cfg.offset_center,dest_folder,debug_mode);
     print(tid);
 }
 
