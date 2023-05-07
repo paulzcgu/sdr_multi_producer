@@ -70,6 +70,9 @@ for (var a=0; a< 20; a++) {
 
 var offset_center = 10;
 trigger = (baseline/19) + offset_center;
+if (tirgger > -35) {
+    trigger = -35;
+}
 print (rx_no, ' - Baseline level on last 20 blocks :', baseline/19, ' -  set trigger level : ' , trigger);
 
 print(rx_no, ' - waiting for signal ...');
@@ -107,8 +110,8 @@ while( fifo_from_rx.isFromRx() ) {
 	    } else {
 		if (recording==1) {
 		    print('End record');
-		    Queues.delete( 'output');
-		    fifo_to_file = Queues.create( 'output');
+		    Queues.delete( 'output'.concat(argv(0)));
+		    fifo_to_file = Queues.create( 'output'.concat(argv(0)));
 		    IO.fdelete(null_filename);
 		    // createTask('start_whisper.js', '/tmp/F_' + (rx.getRxCenterFreq() + (offset_center/1e6)).toFixed(3) + '_' + datenow + '.wav' );
 		    createTask('FM_demod_remote.js',new_file);
