@@ -1,10 +1,20 @@
-This is a test project to research whether SDRVM can listen to two or more RTL-SDR dongles on Raspberry Pi 4b. The project is based on @cemaxecuter's code regarding MQTT and Whipser.
-
-The project is trying to moniter multiple frequency with  mulitple RTL-SDR, record the audio when trigger is met, then send out the audio file path via MQTT. 
+This is a test project to study whether SDRVM can listen to two or more RTL-SDR dongles on Raspberry Pi 4b. The 
+project is based on @cemaxecuter's code regarding MQTT and Whipser. The project is trying to moniter multiple frequency 
+with mulitple RTL-SDR dongles, record the audio when trigger is met, then send out the audio file path via MQTT. 
 
 Current issues:
    * Rarely occasion: Segmentation Fault. Not sure what the trigger is.
 
+How it works:
+   * DDC_MQTT_FM_remote_multi_whisper.cpp will be the master VM, parse the config and create all the JRadio objects. Then 
+     it will spin one 'RX_single.js' VM for each JRadio Object.
+   * RX_single.js is the listener and recording script that each VM of it will monitor their own single JRadio.
+   * If a recording is made, a Task of 'FM_demod_remote.js' will be created. FM is demoded and path of file is broadcast to MQTT.
+   ----
+   Consumer side (Not in this repo):
+       * Once a path is received through specific topic, consumer side will scp the file to consumer's local and run whisper to 
+         transcribe the recording.
+       * Further UI and display is developing.
 
 Pre-requisite:
    * DragonOS Raspberry Pi - DragonOS_Pi64_Beta30
@@ -35,7 +45,8 @@ How to setup:
 	'''
       * Modify the dongle serial with 'rtl_eeprom -s <new_serial>'
       * Once success, disconnect and reconnect the dongle and check with 'SoapySDRUtil --find'
-      * Repeat the processes for the other dongles, ensure each dongle has unique dongle and record all of them
+      * Repeat the processes for the other dongles, ensure each dongle has unique serial number and document all of the serials
+        for next steps.
 
    2. Currently all the files on my rp4 are located under '/usr/src/SDR4space/DragonOS/RX/DDC_whisper', but should work anywhere
 
